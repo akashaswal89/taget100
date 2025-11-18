@@ -4,7 +4,7 @@ const balanceData = [];
 let amount = 100;  
 let day = 1;
 
-while (amount <= 32000) {
+while (amount <= 30000) {
     balanceData.push({
         day: day,
         amount: parseFloat(amount.toFixed(2))
@@ -23,15 +23,23 @@ function populateTable() {
 
     balanceData.forEach((entry, index) => {
 
-        // Base amount ka 2% aur decimal hatao
-        const base = Math.floor(entry.amount * 0.02); 
+        // Base amount ka 2% aur integer
+        const base = Math.floor(entry.amount * 0.02);
 
-        // Tumhara formula: decimal remove karne ke liye Math.floor()
-        const second = Math.floor(base * 2);       // 2x
-        const third  = Math.floor(base * 2.5);     // 2.5x
-        const total  = base + second + third;      // x + 2x + 2.5x
+        // 6 terms generate
+        const terms = [];
+        terms.push(base);                  // term 1
+        terms.push(base * 2);              // term 2
+        terms.push(Math.floor(base * 2.5)); // term 3
+        terms.push(terms[2] * 2);          // term 4
+        terms.push(terms[3] * 2);          // term 5
+        terms.push(terms[4] * 2);          // term 6
 
-        const labelText = `${base} + ${second} + ${third} = ₹${total}`;
+        // Total sum
+        const total = terms.reduce((a, b) => a + b, 0);
+
+        // Label column text
+        const labelText = `${terms.join(" + ")} = ₹${total}`;
 
         const row = document.createElement('tr');
         row.innerHTML = `
