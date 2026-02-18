@@ -10,7 +10,7 @@ while (amount <= 30000) {
         amount: parseFloat(amount.toFixed(2))
     });
 
-    amount = amount * 1.05; // 5% increment
+    amount = amount * 1.05;
     day++;
 }
 
@@ -28,18 +28,21 @@ function populateTable() {
 
         // 6 terms generate
         const terms = [];
-        terms.push(base);                  // term 1
-        terms.push(base * 2);              // term 2
-        terms.push(Math.floor(base * 2.5)); // term 3
-        terms.push(terms[2] * 2);          // term 4
-        terms.push(terms[3] * 2);          // term 5
-        terms.push(terms[4] * 2);          // term 6
+        terms.push(base);
+        terms.push(base * 2);
+        terms.push(Math.floor(base * 2.5));
+        terms.push(terms[2] * 2);
+        terms.push(terms[3] * 2);
+        terms.push(terms[4] * 2);
 
-        // Total sum
-        const total = terms.reduce((a, b) => a + b, 0);
+        // 👉 Sirf last 4 terms
+        const lastFour = terms.slice(2);
 
-        // Label column text
-        const labelText = `${terms.join(" + ")} = ₹${total}`;
+        // Total sum (sirf last 4 ka)
+        const total = lastFour.reduce((a, b) => a + b, 0);
+
+        // Label text
+        const labelText = `${lastFour.join(" + ")} = ₹${total}`;
 
         const row = document.createElement('tr');
         row.innerHTML = `
