@@ -1,77 +1,79 @@
 // Auto-generate 5% increment data starting from 100 to 30,000
 const balanceData = [];
 
-let amount = 100;  
+let amount = 100;
 let day = 1;
 
 while (amount <= 30000) {
     balanceData.push({
         day: day,
-        amount: parseFloat(amount.toFixed(2))
+        amount: Math.floor(amount)
     });
 
-    amount = amount * 1.05;
+    amount *= 1.05;
     day++;
 }
 
-let totalBalance = 0;
 const completedDays = [];
 
 // Populate table
 function populateTable() {
-    const tableBody = document.getElementById('balanceTable');
+    const tableBody = document.getElementById("balanceTable");
 
     balanceData.forEach((entry, index) => {
 
-        // Base amount ka 2% aur integer
-        const base = Math.floor(entry.amount * 0.02);
+        // 2%, 4%, 5% (integer only)
+        const p2 = Math.floor(entry.amount * 0.02);
+        const p4 = Math.floor(entry.amount * 0.04);
+        const p5 = Math.floor(entry.amount * 0.05);
 
-        // 6 terms generate
-        const terms = [];
-        terms.push(base);
-        terms.push(base * 2);
-        terms.push(Math.floor(base * 2.5));
-        terms.push(terms[2] * 2);
-        terms.push(terms[3] * 2);
-        terms.push(terms[4] * 2);
+        // doubling chain
+        const p10 = p5 * 2;
+        const p20 = p10 * 2;
+        const p40 = p20 * 2;
 
-        // 👉 Sirf last 4 terms
-        const lastFour = terms.slice(2);
+        const terms = [p2, p4, p5, p10, p20, p40];
 
-        // Total sum (sirf last 4 ka)
-        const total = lastFour.reduce((a, b) => a + b, 0);
+        const total = terms.reduce((sum, val) => sum + val, 0);
 
-        // Label text
-        const labelText = `${lastFour.join(" + ")} = ₹${total}`;
+        const labelText = `${terms.join(" + ")} = ₹${total}`;
 
-        const row = document.createElement('tr');
+        const row = document.createElement("tr");
+
         row.innerHTML = `
             <td>${entry.day}</td>
-            <td>₹${entry.amount.toFixed(2)}</td>
+            <td>₹${entry.amount}</td>
             <td>${labelText}</td>
         `;
-        
-        if (completedDays.includes(index)) {
-            row.classList.add('success');
-        }
 
-        row.addEventListener('click', () => updateBalance(index, row));
+        row.addEventListener("click", () => updateBalance(entry.amount, row));
+
         tableBody.appendChild(row);
     });
 
-    document.getElementById('balance').innerText = `Balance: ₹0.00`;
+    document.getElementById("balance").innerHTML =
+        'Balance: <span style="color:green;">₹0</span>';
 }
 
-// Update balance on row click
-function updateBalance(index, row) {
-    if (!row.classList.contains('success')) {
-        const clickedAmount = balanceData[index].amount;
-        document.getElementById('balance').innerText = `Balance: ₹${clickedAmount.toFixed(2)}`;
-        row.classList.add('success');
+// Update balance on click
+function updateBalance(amount, row) {
+
+    const balanceElement = document.getElementById("balance");
+
+    if (!row.classList.contains("success")) {
+
+        balanceElement.innerHTML =
+            `Balance: <span style="color:green;">₹${amount}</span>`;
+
+        row.classList.add("success");
+
     } else {
-        document.getElementById('balance').innerText = `Balance: ₹0.00`;
-        row.classList.remove('success');
+
+        balanceElement.innerHTML =
+            'Balance: <span style="color:green;">₹0</span>';
+
+        row.classList.remove("success");
     }
 }
 
-document.addEventListener('DOMContentLoaded', populateTable);
+document.addEventListener("DOMContentLoaded", populateTable);
